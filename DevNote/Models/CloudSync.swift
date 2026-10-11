@@ -521,21 +521,42 @@ final class CloudSync: ObservableObject, CKSyncEngineDelegate, @unchecked Sendab
             throw CKError(.invalidArguments)
         }
         if let existing = shares[Self.zoneKey(zoneID)] { return existing }
-        Persistence.shared.save()
-        let database = ckContainer.privateCloudDatabase
-        // Bölge ve kayıtlar sunucuda olmalı
-        _ = try await database.modifyRecordZones(saving: [CKRecordZone(zoneID: zoneID)], deleting: [])
-        try? await privateEngine?.sendChanges()
+        do {
+            Persistence.shared.save()
+            let database = ckContainer.privateCloudDatabase
+            // Bölge ve kayıtlar sunucuda olmalı
+            _ = try await database.modifyRecordZones(saving: [CKRecordZone(zoneID: zoneID)], deleting: [])
+            try? await privateEngine?.sendChanges()
 
-        let share = CKShare(recordZoneID: zoneID)
-        share[CKShare.SystemFieldKey.title] = notebook.name as CKRecordValue
-        share.publicPermission = .none
-        let result = try await database.modifyRecords(saving: [share], deleting: [])
-        guard let saved = try result.saveResults[share.recordID]?.get() as? CKShare else {
-            throw CKError(.internalError)
+            // Sunucuda zaten paylaşım olabilir (başka cihazda açılmış ya da yerel önbellek silinmiş):
+            // yenisini kaydetmek "zaten var" hatası verir, var olanı kullan
+            let shareID = CKRecord.ID(recordName: CKRecordNameZoneWideShare, zoneID: zoneID)
+            if let existing = try? await database.record(for: shareID) as? CKShare {
+                setShare(existing, for: zoneID)
+                return existing
+            }
+
+            let share = CKShare(recordZoneID: zoneID)
+            share[CKShare.SystemFieldKey.title] = notebook.name as CKRecordValue
+            share.publicPermission = .none
+            let result = try await database.modifyRecords(saving: [share], deleting: [])
+            let saved: CKShare
+            do {
+                guard let record = try result.saveResults[share.recordID]?.get() as? CKShare else {
+                    throw CKError(.internalError)
+                }
+                saved = record
+            } catch let error as CKError where error.code == .serverRecordChanged {
+                guard let server = error.serverRecord as? CKShare else { throw error }
+                saved = server
+            }
+            setShare(saved, for: zoneID)
+            return saved
+        } catch {
+            // Paylaşım ekranı yalnızca "bağlantı oluşturulamadı" der; asıl sebep hata kaydında görünsün
+            Self.report(error, "Paylaşım")
+            throw error
         }
-        setShare(saved, for: zoneID)
-        return saved
     }
 
     /// Sunucudaki güncel paylaşımı al (katılımcı eklendi/çıkarıldıysa).
