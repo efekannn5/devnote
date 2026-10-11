@@ -1,0 +1,89 @@
+name: DevNote
+options:
+  bundleIdPrefix: com.efekan
+  deploymentTarget:
+    macOS: "15.0"
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: "896PY6QKL9"
+    CODE_SIGN_STYLE: Automatic
+targets:
+  DevNote-macOS:
+    type: application
+    platform: macOS
+    sources:
+      - path: DevNote
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_NAME: DevNote
+        PRODUCT_BUNDLE_IDENTIFIER: com.efekan.devnote
+        CODE_SIGN_ENTITLEMENTS: Config/DevNote-macOS.entitlements
+        INFOPLIST_FILE: Config/Info-macOS.plist
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: DevNote
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        # iCloud'u kapatmak için ICLOUD_SYNC'i kaldır
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) ICLOUD_SYNC"
+  DevNote-iOS:
+    type: application
+    platform: iOS
+    scheme:
+      testTargets:
+        - DevNoteUITests
+    sources:
+      - path: DevNote
+      - path: Shared
+    dependencies:
+      - target: DevNoteWidgets
+        embed: true
+    settings:
+      base:
+        PRODUCT_NAME: DevNote
+        PRODUCT_BUNDLE_IDENTIFIER: com.efekan.devnote
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: DevNote
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_ENTITLEMENTS: Config/DevNote-iOS.entitlements
+        INFOPLIST_FILE: Config/Info-iOS.plist
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) ICLOUD_SYNC"
+  DevNoteUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: DevNoteUITests
+    dependencies:
+      - target: DevNote-iOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.efekan.devnote.uitests
+        TEST_TARGET_NAME: DevNote-iOS
+  DevNoteWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: DevNoteWidgets
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_NAME: DevNoteWidgets
+        PRODUCT_BUNDLE_IDENTIFIER: com.efekan.devnote.widgets
+        INFOPLIST_FILE: Config/Info-Widgets.plist
+        CODE_SIGN_ENTITLEMENTS: Config/DevNoteWidgets.entitlements
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: DevNote
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SKIP_INSTALL: YES

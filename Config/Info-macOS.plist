@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- iCloud paylaşım davetlerini uygulama açabilsin -->
+	<!-- Yakındaki kendi cihazlarınla anlık senkron (MultipeerConnectivity) -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>DevNote, notlarını yakındaki Mac ve iPhone'unla anında eşitlemek için yerel ağı kullanır.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_devnote-sync._tcp</string>
+		<string>_devnote-sync._udp</string>
+	</array>
+	<key>CKSharingSupported</key>
+	<true/>
+	<!-- devnote://page/<uuid>, devnote://task/<uuid> -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.efekan.devnote</string>
+			<key>CFBundleURLSchemes</key>
+			<array><string>devnote</string></array>
+		</dict>
+	</array>
+</dict>
+</plist>

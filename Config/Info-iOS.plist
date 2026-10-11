@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Yakındaki kendi cihazlarınla anlık senkron (MultipeerConnectivity) -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>DevNote, notlarını yakındaki Mac ve iPhone'unla anında eşitlemek için yerel ağı kullanır.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_devnote-sync._tcp</string>
+		<string>_devnote-sync._udp</string>
+	</array>
+	<key>CKSharingSupported</key>
+	<true/>
+	<!-- CloudKit değişikliklerini arka planda sessiz push ile al -->
+	<key>UIBackgroundModes</key>
+	<array><string>remote-notification</string></array>
+	<!-- devnote://page/<uuid>, devnote://task/<uuid> -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.efekan.devnote</string>
+			<key>CFBundleURLSchemes</key>
+			<array><string>devnote</string></array>
+		</dict>
+	</array>
+	<!-- Dynamic Island / kilit ekranı görevleri -->
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+</dict>
+</plist>

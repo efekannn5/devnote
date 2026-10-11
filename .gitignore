@@ -1,0 +1,9 @@
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+windows/src-tauri/target/
+windows/node_modules/
+windows/dist/
+.env*
